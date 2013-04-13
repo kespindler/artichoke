@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 from __future__ import print_function
 import subprocess as sub
 import argparse
@@ -6,6 +7,9 @@ import re
 import gscholar
 import urllib2
 import os
+
+def is_title_like(s):
+    return not re.search('\\.\w{3,4}$', s)
 
 ## Gives:
 ##   title, subject, keywords, author, creator, producer, creationdate, 
@@ -19,7 +23,10 @@ def pdfinfo(article_fname):
     for l in lines:
         key, val = re.split(':\s*', l, 1)
         fixedkey = key.replace(' ', '').lower()
-        info[fixedkey] = val
+        if fixedkey == 'title' and not is_title_like(val):
+            continue
+        if val:
+            info[fixedkey] = val
     return info
         
 def extract_from_pdftext(article_fname, guess=False):
@@ -27,13 +34,14 @@ def extract_from_pdftext(article_fname, guess=False):
     text = text.decode('utf8')
 
     results = {}
-    first_100_lines = '\n'.join(text.splitlines()[:100])
+    splitlines = text.splitlines()
+    first_100_lines = '\n'.join(splitlines[:100])
     doimatch = re.search('10\.[0-9]{4,}\/[^\s]*[^\s\.,]', first_100_lines)
     if doimatch:
         results['doi'] = doimatch.group()
 
-    abstract_re = 'abstract[:\n]'
-    match = re.search(abstract_re, first_100_lines, re.IGNORECASE) #I: ignore case
+    abstract_re = u'^abstract[^a-zA-Z]+'
+    match = re.search(abstract_re, first_100_lines, re.IGNORECASE|re.MULTILINE) #I: ignore case
     if match:
         start_index = match.end()
         end_index = first_100_lines.find('\n', start_index)
@@ -41,7 +49,10 @@ def extract_from_pdftext(article_fname, guess=False):
         results['abstract'] = abstract
     
     if guess:
-        title_guess1 = text[:text.find('\n')]
+        for i, l in enumerate(splitlines[:5]):
+            if re.search('study|method|tour|analysis', l, re.IGNORECASE):
+                break
+        title_guess1 = splitlines[i]
         results['title'] = title_guess1
     return results
 
@@ -60,7 +71,7 @@ def display_info(fpath):
     guess = not all(guess in info for guess in guessed_data)
     info_from_text = extract_from_pdftext(fpath, guess)
     for k in info_from_text:
-        if k not in info:
+        if k not in info or (k is 'title' and not is_title_like(info[k])):
             info[k] = info_from_text[k]
 
     query_string = info['doi'] if 'doi' in info else (
@@ -70,6 +81,7 @@ def display_info(fpath):
     bibtex = ''
     if query_string: # query google
         try:
+            print(query_string)
             text = gscholar.query(query_string, gscholar.FORMAT_BIBTEX, False)[0]
             if text:
                 lines = text.splitlines()
@@ -80,7 +92,7 @@ def display_info(fpath):
             pass
 
     if bibtex:
-        update_info_with_bibtex(info, bibtex, guessed_data)
+        update_info_with_bibtex(info, bibtex, guessed_data, True)
 
     notetitle = ''.join([info.get('title', 'Unknown Title'),
         ' - ', info.get('author', 'Authors Unknown')])
