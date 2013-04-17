@@ -58,7 +58,6 @@ FORMAT_WENXIANWANG = 5
 def query(searchstr, outformat, allresults=False):
     """Return a list of bibtex items."""
     logging.debug("Query: %s" % searchstr)
-    searchstr = searchstr.encode('utf8', 'replace')
     searchstr = '/scholar?q='+urllib2.quote(searchstr)
     url = GOOGLE_SCHOLAR_URL + searchstr
     header = HEADERS
@@ -66,8 +65,7 @@ def query(searchstr, outformat, allresults=False):
     request = urllib2.Request(url, headers=header)
     response = urllib2.urlopen(request)
     html = response.read()
-    #html.decode('ascii', 'ignore')
-    html.decode('utf-8', 'ignore')
+    html.decode('ascii', 'ignore') 
     # grab the links
     tmp = get_links(html, outformat)
 
@@ -80,9 +78,9 @@ def query(searchstr, outformat, allresults=False):
         request = urllib2.Request(url, headers=header)
         response = urllib2.urlopen(request)
         bib = response.read()
-        #print
-        #print
-        #print bib
+        print
+        print
+        print bib
         result.append(bib)
     return result
 
