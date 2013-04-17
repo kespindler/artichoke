@@ -61,7 +61,7 @@
 					<key>COMMAND_STRING</key>
 					<string>for f in "$@"
 do
-	/Library/Frameworks/Python.framework/Versions/2.7/bin/python /Developer/artichoke/artichoke.py "$f"
+/Developer/python/Python.framework/Versions/2.7/bin/python ~/Library/Services/Create\ Journal\ Note\ in\ Evernote.workflow/Contents/artichoke.py "$f"
 done</string>
 					<key>CheckedForUserDefaultShell</key>
 					<true/>
