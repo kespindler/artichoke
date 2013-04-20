@@ -82,8 +82,9 @@ def display_info(fpath):
     if query_string: # query google
         try:
             print(query_string)
-            text = gscholar.query(query_string, gscholar.FORMAT_BIBTEX, False)[0]
+            text = gscholar.query(query_string, gscholar.FORMAT_BIBTEX, False)
             if text:
+                text = text[0] # assume the first one
                 lines = text.splitlines()
                 if 'doi' in info:
                     lines.insert(1,'  doi={{{}}},'.format(info['doi']))
