@@ -110,21 +110,21 @@ def display_info(fpath):
 
 def asquote(astr):
   "Return the AppleScript equivalent of the given string."
-  
   astr = unicode(astr).replace(u'"', u'" & quote & "')
   astr = astr.replace('\\', '\\\\')
   return u'"{}"'.format(astr)
 
 def insert_into_evernote(title, body, attachment):
-    args = [asquote(t) for t in [title, body]]
+    args = [asquote(t) for t in [body, attachment, title]]
     ascript = u"""\
 tell application "Evernote"
   activate
-  set note1 to create note title {} with text {} notebook "Inbox"
-  tell note1 to append attachment file {}
-  open note window with note1
+  set note1 to create note with text {}
+  append note1 attachment {}
+  set title of note1 to {}
 end tell""".format(*args)
-  #this should work, but it doesn't for some reason
+    print(ascript)
+    #this should work, but it doesn't for some reason
     sub.call([u'/usr/bin/osascript', u'-e', ascript])
 
 if __name__ == "__main__":
