@@ -121,9 +121,9 @@ def insert_into_evernote(title, body, attachment):
 tell application "Evernote"
   activate
   set note1 to create note title {} with text {} notebook "Inbox"
+  tell note1 to append attachment file {}
   open note window with note1
 end tell""".format(*args)
-  #tell note1 to append attachment file {}
   #this should work, but it doesn't for some reason
     sub.call([u'/usr/bin/osascript', u'-e', ascript])
 
