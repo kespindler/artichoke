@@ -125,7 +125,6 @@ tell application "Evernote"
   append note1 attachment {}
   set title of note1 to {}
 end tell""".format(*args)
-    print(ascript)
     #this should work, but it doesn't for some reason
     sub.call([u'/usr/bin/osascript', u'-e', ascript])
 
