@@ -80,7 +80,6 @@ def display_info(fpath):
             info['abstract'] if 'abstract' in info else 
             None)
 
-    import pdb;pdb.set_trace()
     bibtex = ''
     if query_string: # query google
         try:
