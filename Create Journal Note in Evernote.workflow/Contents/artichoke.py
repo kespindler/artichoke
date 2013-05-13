@@ -50,10 +50,11 @@ def extract_from_pdftext(article_fname, guess=False):
     
     if guess:
         for i, l in enumerate(splitlines[:5]):
-            if re.search('study|method|tour|analysis', l, re.IGNORECASE):
+            if (re.search('study|method|tour|analysis', l, re.IGNORECASE) and 
+                    len(l) < 400):
+                title_guess1 = splitlines[i]
+                results['title'] = title_guess1
                 break
-        title_guess1 = splitlines[i]
-        results['title'] = title_guess1
     return results
 
 def update_info_with_bibtex(info, bibtex, keys, replace = False):
@@ -76,13 +77,15 @@ def display_info(fpath):
 
     query_string = info['doi'] if 'doi' in info else (
             info['title'] if 'title' in info else 
+            info['abstract'] if 'abstract' in info else 
             None)
 
+    import pdb;pdb.set_trace()
     bibtex = ''
     if query_string: # query google
         try:
-            print(query_string)
-            text = gscholar.query(query_string, gscholar.FORMAT_BIBTEX, False)
+            query_string = query_string.encode('ascii','replace')
+            text = gscholar.query(query_string.decode('utf8', 'replace'), gscholar.FORMAT_BIBTEX, False)
             if text:
                 text = text[0] # assume the first one
                 lines = text.splitlines()
