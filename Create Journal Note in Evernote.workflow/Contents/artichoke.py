@@ -102,11 +102,11 @@ def display_info(fpath):
     if guess:
         notetitle += ' METADATA NEEDS REVIEW'
 
-    notebody = ''
+    notebody = u''
     if 'abstract' in info:
-        notebody += info['abstract'] + '\n\n'
+        notebody += info['abstract'] + u'\n\n'
     if bibtex:
-        notebody += bibtex + '\n\n'
+        notebody += bibtex.decode('utf8') + u'\n\n'
 
     insert_into_evernote(notetitle, notebody, fpath)
 
